@@ -1,15 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField
-} from "@material-ui/core";
+import { Checkbox, FormControlLabel, TextField } from "@material-ui/core";
 import {
   createSubject,
   getRegistrationForm,
@@ -20,6 +12,7 @@ import ScreenWithAppBar from "../../components/ScreenWithAppBar";
 import { first, sortBy } from "lodash";
 import Loading from "../../components/Loading";
 import { LineBreak } from "../../../common/components";
+import { CodedFormElement, Form } from "../../components/Form";
 
 const SubjectRegister = props => {
   React.useEffect(() => {
@@ -28,7 +21,7 @@ const SubjectRegister = props => {
     props.createSubject();
   }, []);
 
-  if (!(props.newSubject && props.genders)) {
+  if (!(props.newSubject && props.genders && props.form)) {
     return <Loading />;
   }
 
@@ -91,33 +84,16 @@ const SubjectRegister = props => {
         label="Date of Birth Verified"
       />
       <LineBreak num={2} />
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Gender</FormLabel>
-        <RadioGroup
-          aria-label="gender"
-          name="gender"
-          value={props.newSubject.gender.uuid}
-          onChange={e => {
-            props.updateSubject(
-              "gender",
-              props.genders.find(g => g.uuid === e.target.value)
-            );
-          }}
-        >
-          {sortBy(props.genders, "name").map((g, key) => (
-            <FormControlLabel
-              key={key}
-              value={g.uuid}
-              control={<Radio />}
-              label={g.name}
-            />
-          ))}
-        </RadioGroup>
-      </FormControl>
+      <CodedFormElement
+        groupName="Gender"
+        items={sortBy(props.genders, "name")}
+        isChecked={item => props.newSubject.gender.uuid === item.uuid}
+        onChange={selected => props.updateSubject("gender", selected)}
+      />
       <LineBreak num={4} />
-      {`sample text: ${props.newSubject.firstName} ${
-        props.newSubject.lastName
-      }, ${props.newSubject.gender.name} - ${props.newSubject.dateOfBirth}`}
+      <Form obs={props.newSubject.observations} updateObs={() => {}}>
+        {props.form}
+      </Form>
     </ScreenWithAppBar>
   );
 };

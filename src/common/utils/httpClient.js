@@ -32,6 +32,7 @@ class HttpClient {
       options.headers.set("user-name", authParams.username);
       if (authParams.token) options.headers.set("AUTH-TOKEN", authParams.token);
     }
+    options.headers.set("USER-NAME", "ihmp-dev");
   }
 
   fetchJson(url, options = {}) {
