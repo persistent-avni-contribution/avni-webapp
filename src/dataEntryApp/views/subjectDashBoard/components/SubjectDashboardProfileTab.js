@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SubjectDashboardProfileTab = ({ profile }) => {
+const SubjectDashboardProfileTab = ({ profile, path }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState("");
 
@@ -93,7 +93,7 @@ const SubjectDashboardProfileTab = ({ profile }) => {
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-          <GridCommonList gridListDetails={profile.relationships} />
+          <GridCommonList gridListDetails={profile.relationships} path={path}  subjectProfile={profile}/>
         </ExpansionPanelDetails>
         <Button color="primary">ADD RELATIVE</Button>
       </ExpansionPanel>

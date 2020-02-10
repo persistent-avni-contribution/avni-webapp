@@ -44,7 +44,7 @@ TabContent.propTypes = {
   value: PropTypes.any.isRequired
 };
 
-export default ({ profile, general, program }) => {
+export default ({ profile, general, program, path }) => {
   const classes = useStyles();
 
   const [value, setValue] = React.useState(0);
@@ -84,7 +84,7 @@ export default ({ profile, general, program }) => {
       </TabContent>
       <TabContent value={value} index={1}>
         <Paper className={classes.tabsDisplay}>
-          <SubjectDashboardProfileTab profile={profile} />
+          <SubjectDashboardProfileTab profile={profile} path={path}/>
         </Paper>
       </TabContent>
       <TabContent value={value} index={2}>

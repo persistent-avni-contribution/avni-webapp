@@ -38,6 +38,7 @@ const SubjectDashboard = ({
           profile={subjectProfile}
           general={subjectGeneral}
           program={subjectProgram}
+          path={match.path}
         />
       </Paper>
     );
