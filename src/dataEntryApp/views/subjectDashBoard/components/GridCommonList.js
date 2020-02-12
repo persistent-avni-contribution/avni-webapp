@@ -38,66 +38,51 @@ const useStyles = makeStyles(theme => ({
 
 const GridCommonList = ({ gridListDetails, path,
   subjectProfile,
-  }) => {
+}) => {
   console.log(gridListDetails, path, subjectProfile );
   const classes = useStyles();
   return (
     <Grid item xs={12} container className={classes.gridBottomBorder}>
       {gridListDetails
         ? gridListDetails.map(relative => {
-            if (relative !== undefined) {
-              return (
-                <Grid item xs={3} className={classes.rightBorder}>
-                  <Card className={classes.card}>
-                    <CardContent>
-                      <Typography component={"div"} color="primary">
-                      <Router>
-                      <Link to={`#${path}?uuid=${relative.individualBUuid}`} >
-                              {relative.firstName + " " + relative.lastName}
-                      </Link>
-
-                      <Switch>
-                          <Route
-                            exact
-                            path={`#${path}?uuid=${relative.individualBUuid}`}
-                            component={SubjectDashboard}
-                          >
-                          </Route>
-                          
-                        </Switch>
-                      </Router>
-                      {/* <a href="#/app/subject?uuid=8c66190c-5e1a-491a-932f-2710ee63ed83">  {relative.firstName + " " + relative.lastName} </a> */}
-                      </Typography>
-                      <Typography
-                        component={"span"}
-                        className={classes.title}
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        {relative.individualBIsToARelation}
-                      </Typography>
-                      <Typography
-                        component={"span"}
-                        className={classes.title}
-                        color="textSecondary"
-                        gutterBottom
-                      >
-                        {new Date().getFullYear() -
-                          new Date(relative.dateOfBirth).getFullYear() +
-                          " Year"}
-                      </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button color="primary">REMOVE</Button>
-                      <Button color="primary">EDIT</Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              );
-            } else {
-              return "";
-            }
-          })
+          if (relative !== undefined) {
+            return (
+              <Grid item xs={3} className={classes.rightBorder}>
+                <Card className={classes.card}>
+                  <CardContent>
+                    <Typography component={"div"} color="primary">
+                      <Link to={`?uuid=${relative.individualBUuid}`} replace > {relative.firstName + " " + relative.lastName} </Link>
+                    </Typography>
+                    <Typography
+                      component={"span"}
+                      className={classes.title}
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      {relative.individualBIsToARelation}
+                    </Typography>
+                    <Typography
+                      component={"span"}
+                      className={classes.title}
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      {new Date().getFullYear() -
+                        new Date(relative.dateOfBirth).getFullYear() +
+                        " Year"}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button color="primary">REMOVE</Button>
+                    <Button color="primary">EDIT</Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          } else {
+            return "";
+          }
+        })
         : ""}
     </Grid>
   );
