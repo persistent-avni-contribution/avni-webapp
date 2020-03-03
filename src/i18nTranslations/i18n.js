@@ -1,7 +1,6 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import httpClient from "common/utils/httpClient";
-
 let defaultLanguage;
 let translationData;
 httpClient.fetchJson(`/me`).then(response => {
@@ -24,7 +23,9 @@ httpClient.fetchJson(`/web/translations`).then(response => {
       wait: true
     }
   });
+  i18n.addResourceBundle(defaultLanguage.settings.locale, ["translations"], translationData);
+})
+ })
+ export default(i18n);
 
-})
-})
-export default i18n;
+
