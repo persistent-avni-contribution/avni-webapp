@@ -23,7 +23,6 @@ httpClient.fetchJson(`/web/translations`).then(response => {
       wait: true
     }
   });
-  i18n.addResourceBundle(defaultLanguage.settings.locale, ["translations"], translationData);
 })
  })
  export default(i18n);

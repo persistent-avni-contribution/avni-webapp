@@ -4,7 +4,7 @@ import dataEntrySaga from "../dataEntryApp/sagas";
 import translationsSaga from "../translations/sagas";
 import uploadSagas from "../upload/sagas";
 import reportSagas from "../reports/sagas";
-import translationApiSaga, { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
+import { organisationConfigWatcher } from "../i18nTranslations/TranslationSaga";
 
 import {
   authProvider,
@@ -15,7 +15,6 @@ import {
   initialiseCognito,
   onSetCognitoUser,
   userInfoWatcher
-  //  organisationConfigWatcher
 } from "./saga";
 
 const dataProvider = springDataProvider("");
@@ -32,8 +31,7 @@ export default function* rootSaga() {
       dataEntrySaga,
       translationsSaga,
       uploadSagas,
-      reportSagas,
-      translationApiSaga
+      reportSagas
     ].map(fork)
   );
 }

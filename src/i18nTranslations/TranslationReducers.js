@@ -15,23 +15,8 @@ export const setOrgConfigInfo = orgConfig => ({
   payload: orgConfig
 });
 
-export const getTranslation = () => {
-  return { type: types.GET_TRANSLATION };
-};
-
-export const setTranslation = translationData => ({
-  type: types.SET_TRANSLATION,
-  payload: translationData
-});
-
 export default function(state = {}, action) {
   switch (action.type) {
-    case types.SET_TRANSLATION: {
-      return {
-        ...state,
-        translationData: action.translationData
-      };
-    }
     case types.SET_ORG_CONFIG: {
       return {
         ...state,
