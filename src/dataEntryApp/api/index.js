@@ -20,5 +20,14 @@ export default {
   },
   fetchSubjectGeneral: uuid => {
     return httpClient.fetchJson(`/web/subject/${uuid}/encounters/`).then(response => response.json);
+  },
+
+  fetchRules: (reqUrl, reqBody) => {
+    return httpClient
+      .fetchJson(reqUrl, {
+        method: "POST",
+        body: JSON.stringify(reqBody)
+      })
+      .then(response => response.json);
   }
 };
