@@ -4,9 +4,8 @@ import { all, fork } from "redux-saga/effects";
 import subjectDashboardSaga from "./subjectDashboardSaga";
 import generalSubjectDashboardSaga from "./generalSubjectDashboardSaga";
 import programSubjectDashboardSaga from "./programSubjectDashboardSaga";
+import rulesSaga from "./rulesSaga";
 // import translationApiSaga from "../sagas/TranslationSaga"
-
-
 
 export default function* rootSaga() {
   yield all(
@@ -15,9 +14,10 @@ export default function* rootSaga() {
       subjectSaga,
       subjectDashboardSaga,
       generalSubjectDashboardSaga,
-      programSubjectDashboardSaga
+      programSubjectDashboardSaga,
+      rulesSaga
+
       // translationApiSaga
-      
     ].map(fork)
   );
 }
