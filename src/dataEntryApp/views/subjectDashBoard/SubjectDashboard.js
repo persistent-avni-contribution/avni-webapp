@@ -277,9 +277,10 @@ const SubjectDashboard = ({
   rulesData
 }) => {
   const classes = useStyles();
-
+  let rules = "no rules";
   const handleProfileMenuOpen = () => {
     getRules(requestUrl, requestBody);
+    rules = "show data";
   };
 
   let paperInfo;
@@ -287,12 +288,22 @@ const SubjectDashboard = ({
     //console.log("rules" + rulesData.data.encounterDecisions[0].value[0]);
     console.log("Rules Json" + JSON.stringify(rulesData));
     //  alert(JSON.stringify(rulesData.data.encounterDecisions[0].value[0]));
+    if (rulesData) {
+      var txt = JSON.stringify(rulesData);
+      var obj = JSON.parse(txt);
 
+      // alert(obj.rulesData.data.encounterDecisions[0].value[0]);
+      // console.log(obj.rulesData.data.encounterDecisions[0].value[0]);
+    }
     paperInfo = (
       <Paper className={classes.root}>
         <button onClick={handleProfileMenuOpen}>rules</button>
-
-        <ProfileDetails profileDetails={subjectProfile} />
+        <div>{JSON.stringify(rulesData.rulesData)}</div>
+        {/* <div>{`${obj? obj.data.encounterDecisions[0].value[0] : ""}`}</div> */}
+        <ProfileDetails
+          profileDetails={subjectProfile}
+          rules={JSON.stringify(rulesData.rulesData)}
+        />
         <SubjectDashboardTabs
           profile={subjectProfile}
           general={subjectGeneral}
@@ -306,6 +317,7 @@ const SubjectDashboard = ({
     getSubjectProfile(match.queryParams.uuid);
     getSubjectGeneral(match.queryParams.uuid);
     getSubjectProgram(match.queryParams.uuid);
+    // getRules(requestUrl, requestBody);
 
     //getRules(body);
   }, []);

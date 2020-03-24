@@ -40,13 +40,29 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const ProfileDetails = ({ profileDetails }) => {
+const ProfileDetails = ({ profileDetails, rules }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  // const a = JSON.parse(rules)
+  // console.log(a);
+  //  console.log(JSON.stringify(rules.rulesData));
+  //  var txt = JSON.stringify(rules.rulesData);
+  console.log("'" + rules + "'");
+
+  var obj = {};
+  //var txt = '{"status":"success","data":{"enrolmentDecisions":[],"encounterDecisions":[{"name":"Refer to the hospital immediately for","value":["Baby has got diarrohea"]}],"registrationDecisions":[]}}';
+  if (rules) {
+    //var txt = "{'status':'success','data':{'enrolmentDecisions':[],'encounterDecisions':[{'name':'Refer to the hospital immediately for','value':['Baby has got diarrohea']}],'registrationDecisions':[]}}"
+    var txt = rules;
+    obj = JSON.parse(txt);
+    // obj = JSON.parse(JSON.stringify(rules.rulesData));
+  }
+  //document.getElementById("demo").innerHTML = obj.status + "," + obj.data.encounterDecisions[0].value[0];
   return (
     <div className={classes.tableView}>
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
+        {`${obj.data ? obj.data.encounterDecisions[0].value[0] : obj}`}
       </Typography>
       <Grid justify="center" alignItems="center" container spacing={2}>
         <Grid item>
