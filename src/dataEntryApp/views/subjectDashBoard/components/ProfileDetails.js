@@ -60,9 +60,10 @@ const ProfileDetails = ({ profileDetails, rules }) => {
   //document.getElementById("demo").innerHTML = obj.status + "," + obj.data.encounterDecisions[0].value[0];
   return (
     <div className={classes.tableView}>
+      <div style="color:red"> {`${obj.data ? obj.data.encounterDecisions[0].value[0] : obj}`}</div>
+
       <Typography component={"span"} className={classes.mainHeading}>
         {`${profileDetails.firstName} ${profileDetails.lastName}`} {t("Dashboard")}
-        {`${obj.data ? obj.data.encounterDecisions[0].value[0] : obj}`}
       </Typography>
       <Grid justify="center" alignItems="center" container spacing={2}>
         <Grid item>

@@ -298,7 +298,7 @@ const SubjectDashboard = ({
     paperInfo = (
       <Paper className={classes.root}>
         <button onClick={handleProfileMenuOpen}>rules</button>
-        <div>{JSON.stringify(rulesData.rulesData)}</div>
+        {/* <div>{JSON.stringify(rulesData.rulesData)}</div> */}
         {/* <div>{`${obj? obj.data.encounterDecisions[0].value[0] : ""}`}</div> */}
         <ProfileDetails
           profileDetails={subjectProfile}
