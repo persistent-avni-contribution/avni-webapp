@@ -7,6 +7,7 @@ import programSubjectDashboardSaga from "./programSubjectDashboardSaga";
 import { saveUserInfoWatcher } from "rootApp/saga";
 import programSaga from "./programSaga";
 // import translationApiSaga from "../sagas/TranslationSaga"
+import rulesSaga from "./rulesSaga";
 
 export default function* rootSaga() {
   yield all(
@@ -17,7 +18,8 @@ export default function* rootSaga() {
       generalSubjectDashboardSaga,
       programSubjectDashboardSaga,
       saveUserInfoWatcher,
-      programSaga
+      programSaga,
+      rulesSaga
       // translationApiSaga
     ].map(fork)
   );

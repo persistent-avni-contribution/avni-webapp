@@ -35,5 +35,13 @@ export default {
   },
   fetchEnrolments: uuid => {
     return httpClient.fetchJson(`/api/enrolments/`).then(response => response.json);
+  },
+  fetchRules: (reqUrl, reqBody) => {
+    return httpClient
+      .fetchJson(reqUrl, {
+        method: "POST",
+        body: JSON.stringify(reqBody)
+      })
+      .then(response => response.json);
   }
 };
