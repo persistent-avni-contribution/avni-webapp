@@ -155,6 +155,7 @@ function* updateObsWatcher() {
 
 export function* updateObsWorker({ formElement, value }) {
   const subject = yield select(state => state.dataEntry.registration.subject);
+
   console.log(subject.observations);
   subject.observations = updateObservations(subject.observations, formElement, value);
   yield put(setSubject(subject));

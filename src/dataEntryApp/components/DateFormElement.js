@@ -18,6 +18,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
 import { Duration } from "avni-models";
 import _, { isEmpty, get, find } from "lodash";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,12 +30,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const DateTimeFormElement = ({ formElement: fe, value, update }) => {
+  const { t } = useTranslation();
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDateTimePicker
         autoOk
         ampm={true}
-        label={fe.display || fe.name}
+        label={t(fe.display || fe.name)}
         required={fe.mandatory}
         value={value}
         onChange={update}
@@ -58,6 +61,7 @@ const getValue = (keyValues, key) => {
 
 export const DateFormElement = ({ formElement: fe, value, update }) => {
   let durationValue = getValue(fe.keyValues, "durationOptions");
+  const { t } = useTranslation();
 
   return durationValue ? (
     <DateAndDurationFormElement formElement={fe} value={value} update={update} />
@@ -65,7 +69,7 @@ export const DateFormElement = ({ formElement: fe, value, update }) => {
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDatePicker
         autoOk
-        label={fe.display || fe.name}
+        label={t(fe.display || fe.name)}
         required={fe.mandatory}
         value={value}
         onChange={update}
@@ -83,6 +87,7 @@ export const DateFormElement = ({ formElement: fe, value, update }) => {
 
 export const DateAndDurationFormElement = ({ formElement: fe, value, update }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   let durationValue = JSON.parse(getValue(fe.keyValues, "durationOptions"));
   const [units, setUnit] = React.useState(durationValue[0]);
@@ -114,11 +119,11 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
   };
   return (
     <FormControl style={{ width: "100%" }}>
-      <FormLabel>{fe.display || fe.name}</FormLabel>
+      <FormLabel>{t(fe.display || fe.name)}</FormLabel>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <KeyboardDatePicker
           autoOk
-          label="Select Date"
+          label={t("Select Date")}
           required={fe.mandatory}
           value={date}
           onChange={dateValue => onDateChange(dateValue)}
@@ -132,13 +137,19 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
         />
       </MuiPickersUtilsProvider>
       <div>
-        <FormLabel>OR</FormLabel>
+        <FormLabel>{t("OR")}</FormLabel>
       </div>
       <form>
-        <RadioGroup row aria-label="gender" name="gender1" value={units} onChange={onChangeUnit}>
+        <RadioGroup
+          row
+          aria-label="Duration"
+          name="duration1"
+          value={units}
+          onChange={onChangeUnit}
+        >
           <TextField
             id="standard-number"
-            label="Enter Duration"
+            label={t("Enter Duration")}
             type="number"
             InputLabelProps={{
               shrink: true
@@ -148,7 +159,7 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
             onChange={durationValue => onDurationChange(durationValue)}
           />
           {durationValue.map(item => (
-            <FormControlLabel value={item} control={<Radio color="primary" />} label={item} />
+            <FormControlLabel value={item} control={<Radio color="primary" />} label={t(item)} />
           ))}
         </RadioGroup>
       </form>

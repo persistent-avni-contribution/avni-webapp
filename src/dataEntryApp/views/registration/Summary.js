@@ -10,6 +10,7 @@ import { withParams } from "../../../common/components/utils";
 import { getRules } from "../../reducers/rulesReducer";
 
 import Loading from "../../components/Loading";
+import BrowserStore from "../../api/browserStore";
 
 const useStyle = makeStyles(theme => ({
   form: {
@@ -21,9 +22,11 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Summary = ({ observations, getRules, rulesData }) => {
+const Summary = ({ observations, subject, getRules, rulesData }) => {
   const classes = useStyle();
   const { t } = useTranslation();
+
+  console.log("Subject ************" + subject);
 
   const requestUrl = `web/decisionrule`;
   const requestBody = {

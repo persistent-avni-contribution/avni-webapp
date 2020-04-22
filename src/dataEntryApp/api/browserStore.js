@@ -37,6 +37,8 @@ export default class {
         store.dispatch({ type: types.ADD_CONCEPT, value: concept });
       });
       subject.observations = observationHolder.observations;
+      console.log("subject *******", JSON.stringify(subject.toResource));
+
       return subject;
     } else return;
   }
