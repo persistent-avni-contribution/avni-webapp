@@ -12,6 +12,17 @@ import { getRules } from "../../reducers/rulesReducer";
 import Loading from "../../components/Loading";
 import BrowserStore from "../../api/browserStore";
 
+import {
+  getRegistrationForm,
+  onLoad,
+  saveSubject,
+  updateObs,
+  updateSubject,
+  setSubject,
+  saveCompleteFalse
+} from "../../reducers/registrationReducer";
+import { disableSession } from "common/constants";
+
 const useStyle = makeStyles(theme => ({
   form: {
     padding: theme.spacing(4, 3)
@@ -22,11 +33,11 @@ const useStyle = makeStyles(theme => ({
   }
 }));
 
-const Summary = ({ observations, subject, getRules, rulesData }) => {
+const Summary = ({ observations, getRules, rulesData, ...props }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-
-  console.log("Subject ************" + subject);
+  // let subject = BrowserStore.fetchSubject();
+  // props.setSubject(subject);
 
   const requestUrl = `web/decisionrule`;
   const requestBody = {
@@ -208,6 +219,15 @@ const Summary = ({ observations, subject, getRules, rulesData }) => {
 
   useEffect(() => {
     console.log("get ********");
+    (async function fetchData() {
+      await props.onLoad(props.match.queryParams.type);
+      props.saveCompleteFalse();
+      if (!disableSession) {
+        let subject = BrowserStore.fetchSubject();
+        if (subject) props.setSubject(subject);
+        console.log("Subject ########", subject.toResource);
+      }
+    })();
     getRules(requestUrl, requestBody);
   }, []);
 
@@ -246,11 +266,14 @@ const Summary = ({ observations, subject, getRules, rulesData }) => {
 };
 const mapStateToProps = state => ({
   rulesData: state.dataEntry.rules,
-  subject: state.dataEntry.subject
+  subject: state.dataEntry.registration.subject
 });
 
 const mapDispatchToProps = {
-  getRules
+  getRules,
+  onLoad,
+  setSubject,
+  saveCompleteFalse
 };
 
 export default withRouter(
