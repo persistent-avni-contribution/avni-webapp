@@ -1,9 +1,16 @@
-import { invoke, get } from "lodash";
+import _, { invoke, get } from "lodash";
 import React from "react";
 import { LineBreak } from "../../common/components/utils";
 import { FormElement } from "./FormElement";
+import { ObservationsHolder } from "avni-models";
 
-export const FormElementGroup = ({ children: feg, parentChildren, obsHolder, updateObs }) => {
+export const FormElementGroup = ({
+  children: feg,
+  obsHolder,
+  updateObs,
+  parentChildren,
+  validationResults
+}) => {
   return (
     <div>
       <LineBreak num={1} />
@@ -22,6 +29,8 @@ export const FormElementGroup = ({ children: feg, parentChildren, obsHolder, upd
             concept={fe.concept}
             obsHolder={obsHolder}
             value={observationValue}
+            validationResults={validationResults}
+            uuid={fe.uuid}
             update={value => {
               updateObs(fe, value);
             }}

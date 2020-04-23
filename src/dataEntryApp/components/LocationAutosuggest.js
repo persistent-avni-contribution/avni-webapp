@@ -2,9 +2,7 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import http from "common/utils/httpClient";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
 import { useTranslation } from "react-i18next";
-import SubjectValidation from "../views/registration/SubjectValidation";
 
 const useStyles = makeStyles(theme => ({
   rautosuggestinput: {
@@ -19,11 +17,14 @@ const useStyles = makeStyles(theme => ({
     "border-radius": "4px"
   },
   errmsg: {
-    color: "red"
+    color: "#f44336",
+    "font-family": "Roboto",
+    "font-weight": 400,
+    "font-size": "0.75rem"
   }
 }));
 
-const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
+const LocationAutosuggest = ({ onSelect, selectedVillage, data, errorMsg }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -64,9 +65,11 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
 
     return inputLength === 0
       ? []
-      : await http
-          .get(`locations/search/find?title=${inputValue}`)
-          .then(res => res.data._embedded.locations);
+      : await http.get(`locations/search/find?title=${inputValue}`).then(res => {
+          if (res.data._embedded) {
+            return res.data._embedded.locations;
+          } else return [];
+        });
   };
 
   const inputProps = {
@@ -87,6 +90,7 @@ const LocationAutosuggest = ({ onSelect, selectedVillage, data }) => {
         inputProps={inputProps}
         onSuggestionSelected={onSuggestionSelected}
       />
+      {errorMsg && <span className={classes.errmsg}>{t(errorMsg)}</span>}
     </div>
   );
 };

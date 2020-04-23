@@ -17,7 +17,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import moment from "moment/moment";
 import { Duration } from "avni-models";
-import _, { isEmpty, get, find } from "lodash";
+import _, { isNil, get, find } from "lodash";
 import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(theme => ({
@@ -29,8 +29,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export const DateTimeFormElement = ({ formElement: fe, value, update }) => {
+export const DateTimeFormElement = ({
+  formElement: fe,
+  value,
+  update,
+  validationResults,
+  uuid
+}) => {
   const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -40,6 +50,8 @@ export const DateTimeFormElement = ({ formElement: fe, value, update }) => {
         label={t(fe.display || fe.name)}
         required={fe.mandatory}
         value={value}
+        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+        error={validationResult && !validationResult.success}
         onChange={update}
         onError={console.log}
         // disablePast
@@ -59,12 +71,21 @@ const getValue = (keyValues, key) => {
   return get(keyValue, "value");
 };
 
-export const DateFormElement = ({ formElement: fe, value, update }) => {
+export const DateFormElement = ({ formElement: fe, value, update, validationResults, uuid }) => {
   let durationValue = getValue(fe.keyValues, "durationOptions");
   const { t } = useTranslation();
+  const validationResult = find(
+    validationResults,
+    validationResult => validationResult.formIdentifier === uuid
+  );
 
   return durationValue ? (
-    <DateAndDurationFormElement formElement={fe} value={value} update={update} />
+    <DateAndDurationFormElement
+      formElement={fe}
+      value={value}
+      update={update}
+      validationResult={validationResult}
+    />
   ) : (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <KeyboardDatePicker
@@ -73,6 +94,8 @@ export const DateFormElement = ({ formElement: fe, value, update }) => {
         required={fe.mandatory}
         value={value}
         onChange={update}
+        helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+        error={validationResult && !validationResult.success}
         onError={console.log}
         format="dd/MM/yyyy"
         style={{ width: "30%" }}
@@ -85,7 +108,12 @@ export const DateFormElement = ({ formElement: fe, value, update }) => {
   );
 };
 
-export const DateAndDurationFormElement = ({ formElement: fe, value, update }) => {
+export const DateAndDurationFormElement = ({
+  formElement: fe,
+  value,
+  update,
+  validationResult
+}) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
@@ -96,12 +124,16 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
   const firstDuration = `${today.diff(value, units ? units : "years")}`;
   const [duration, setduration] = React.useState(firstDuration);
   const onDateChange = dateValue => {
-    const currentDate = moment();
-    const selectedDate = moment(dateValue);
-    update(selectedDate);
-    const extractDuration = `${currentDate.diff(selectedDate, units)}`;
-    setduration(extractDuration);
-    setDate(selectedDate);
+    if (isNil(dateValue)) {
+      update(null);
+    } else {
+      const currentDate = moment();
+      const selectedDate = moment(dateValue);
+      update(selectedDate);
+      const extractDuration = `${currentDate.diff(selectedDate, units)}`;
+      setduration(extractDuration);
+      setDate(selectedDate);
+    }
   };
 
   const onDurationChange = durationValue => {
@@ -127,6 +159,8 @@ export const DateAndDurationFormElement = ({ formElement: fe, value, update }) =
           required={fe.mandatory}
           value={date}
           onChange={dateValue => onDateChange(dateValue)}
+          helperText={validationResult && t(validationResult.messageKey, validationResult.extra)}
+          error={validationResult && !validationResult.success}
           onError={console.log}
           format="dd/MM/yyyy"
           style={{ width: "30%" }}
