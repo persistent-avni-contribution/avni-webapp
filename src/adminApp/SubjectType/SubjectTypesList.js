@@ -1,15 +1,43 @@
 import React, { Fragment, useState } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _ from "lodash";
-import { withRouter, Redirect } from "react-router-dom";
+import { get, isEmpty, isEqual } from "lodash";
+import { Redirect, withRouter } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
+import { findRegistrationForm } from "../domain/formMapping";
+import { useFormMappings } from "./effects";
 
 const SubjectTypesList = ({ history }) => {
+  const [formMappings, setFormMappings] = useState([]);
+
+  useFormMappings(setFormMappings);
+
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      sorting: false,
+      render: rowData => <a href={`#/appDesigner/subjectType/${rowData.id}/show`}>{rowData.name}</a>
+    },
+    {
+      title: "Registration form name",
+      field: "formName",
+      sorting: false,
+      render: rowData => (
+        <a
+          href={`#/appdesigner/forms/${get(
+            findRegistrationForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findRegistrationForm(formMappings, rowData), "formName")}
+        </a>
+      )
+    },
+    { title: "Household", field: "household", type: "boolean" },
+    { title: "Group", field: "group", type: "boolean" },
     { title: "Organisation Id", field: "organisationId", type: "numeric" }
   ];
 
@@ -22,7 +50,7 @@ const SubjectTypesList = ({ history }) => {
       let apiUrl = "/web/subjectType?";
       apiUrl += "size=" + query.pageSize;
       apiUrl += "&page=" + query.page;
-      if (!_.isEmpty(query.orderBy.field))
+      if (!isEmpty(query.orderBy.field))
         apiUrl += `&sort=${query.orderBy.field},${query.orderDirection}`;
       http
         .get(apiUrl)
@@ -71,12 +99,6 @@ const SubjectTypesList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              onRowClick={(event, rowData) =>
-                history.push({
-                  pathname: `/appDesigner/subjectType/${rowData.id}/show`,
-                  state: {}
-                })
-              }
             />
           </div>
         </div>
@@ -86,4 +108,8 @@ const SubjectTypesList = ({ history }) => {
   );
 };
 
-export default withRouter(SubjectTypesList);
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
+
+export default withRouter(React.memo(SubjectTypesList, areEqual));

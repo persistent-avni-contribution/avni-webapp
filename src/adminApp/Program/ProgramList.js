@@ -1,19 +1,94 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import MaterialTable from "material-table";
 import http from "common/utils/httpClient";
-import _ from "lodash";
+import _, { get, isEqual } from "lodash";
 import { withRouter, Redirect } from "react-router-dom";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
 import Button from "@material-ui/core/Button";
+import WorkFlowFormCreation from "../WorkFlow/WorkFlowFormCreation";
+import { ShowSubjectType } from "../WorkFlow/ShowSubjectType";
+import {
+  findProgramEncounterForm,
+  findProgramEnrolmentForm,
+  findProgramExitForm
+} from "../domain/formMapping";
 
 const ProgramList = ({ history }) => {
+  const [formMappings, setFormMappings] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+  const [notificationAlert, setNotificationAlert] = useState(false);
+  const [message, setMessage] = useState("");
+  const [formList, setFormList] = useState([]);
+
+  useEffect(() => {
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setFormMappings(formMap);
+        setSubjectType(response.data.subjectTypes);
+        setFormList(response.data.forms);
+      })
+      .catch(error => {});
+  }, []);
+
   const columns = [
-    { title: "Name", field: "name", defaultSort: "asc" },
+    {
+      title: "Name",
+      defaultSort: "asc",
+      sorting: false,
+      render: rowData => <a href={`#/appDesigner/program/${rowData.id}/show`}>{rowData.name}</a>
+    },
+    {
+      title: "Subject type",
+      sorting: false,
+      render: rowData => (
+        <ShowSubjectType
+          rowDetails={rowData}
+          subjectType={subjectType}
+          formMapping={formMappings}
+          setMapping={setFormMappings}
+          entityUUID="programUUID"
+        />
+      )
+    },
+    {
+      title: "Enrolment form name",
+      field: "formName",
+      sorting: false,
+      render: rowData => (
+        <a
+          href={`#/appdesigner/forms/${get(
+            findProgramEnrolmentForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findProgramEnrolmentForm(formMappings, rowData), "formName")}
+        </a>
+      )
+    },
+    {
+      title: "Exit form name",
+      field: "formName",
+      sorting: false,
+      render: rowData => (
+        <a
+          href={`#/appdesigner/forms/${get(
+            findProgramExitForm(formMappings, rowData),
+            "formUUID"
+          )}`}
+        >
+          {get(findProgramExitForm(formMappings, rowData), "formName")}
+        </a>
+      )
+    },
     {
       title: "Colour",
       field: "colour",
       type: "string",
+      sorting: false,
       render: rowData => (
         <div
           style={{ width: "20px", height: "20px", border: "1px solid", background: rowData.colour }}
@@ -21,9 +96,7 @@ const ProgramList = ({ history }) => {
           &nbsp;
         </div>
       )
-    },
-    { title: "Program subject label", field: "programSubjectLabel", type: "string" },
-    { title: "Organisation Id", field: "organisationId", type: "numeric" }
+    }
   ];
 
   const [redirect, setRedirect] = useState(false);
@@ -84,12 +157,6 @@ const ProgramList = ({ history }) => {
                   backgroundColor: rowData["voided"] ? "#DBDBDB" : "#fff"
                 })
               }}
-              onRowClick={(event, rowData) =>
-                history.push({
-                  pathname: `/appDesigner/program/${rowData.id}/show`,
-                  state: {}
-                })
-              }
             />
           </div>
         </div>
@@ -98,5 +165,8 @@ const ProgramList = ({ history }) => {
     </>
   );
 };
+function areEqual(prevProps, nextProps) {
+  return isEqual(prevProps, nextProps);
+}
 
-export default withRouter(ProgramList);
+export default withRouter(React.memo(ProgramList, areEqual));

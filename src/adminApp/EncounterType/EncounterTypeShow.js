@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import http from "common/utils/httpClient";
 import { Redirect } from "react-router-dom";
@@ -10,10 +10,20 @@ import Moment from "react-moment";
 import Grid from "@material-ui/core/Grid";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs/components/prism-core";
+import { ShowPrograms, ShowSubjectType } from "../WorkFlow/ShowSubjectType";
+import { get } from "lodash";
+import {
+  findProgramEncounterCancellationForm,
+  findProgramEncounterForm
+} from "../domain/formMapping";
 
 const EncounterTypeShow = props => {
   const [encounterType, setEncounterType] = useState({});
   const [editAlert, setEditAlert] = useState(false);
+  const [formMappings, setFormMappings] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+  const [program, setProgram] = useState([]);
+
   useEffect(() => {
     http
       .get("/web/encounterType/" + props.match.params.id)
@@ -21,6 +31,17 @@ const EncounterTypeShow = props => {
       .then(result => {
         setEncounterType(result);
       });
+
+    http
+      .get("/web/operationalModules")
+      .then(response => {
+        const formMap = response.data.formMappings;
+        formMap.map(l => (l["isVoided"] = false));
+        setFormMappings(formMap);
+        setSubjectType(response.data.subjectTypes);
+        setProgram(response.data.programs);
+      })
+      .catch(error => {});
   }, []);
 
   return (
@@ -38,6 +59,58 @@ const EncounterTypeShow = props => {
             <FormLabel style={{ fontSize: "13px" }}>Name</FormLabel>
             <br />
             <span style={{ fontSize: "15px" }}>{encounterType.name}</span>
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Subject type</FormLabel>
+            <br />
+            <ShowSubjectType
+              rowDetails={encounterType}
+              subjectType={subjectType}
+              formMapping={formMappings}
+              entityUUID="encounterTypeUUID"
+            />
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Program</FormLabel>
+            <br />
+            <ShowPrograms
+              rowDetails={encounterType}
+              program={program}
+              formMapping={formMappings}
+              setMapping={setFormMappings}
+            />
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Encounter form</FormLabel>
+            <br />
+            <span style={{ fontSize: "15px" }}>
+              <a
+                href={`#/appdesigner/forms/${get(
+                  findProgramEncounterForm(formMappings, encounterType),
+                  "formUUID"
+                )}`}
+              >
+                {get(findProgramEncounterForm(formMappings, encounterType), "formName")}
+              </a>
+            </span>
+          </div>
+          <p />
+          <div>
+            <FormLabel style={{ fontSize: "13px" }}>Encounter cancellation form</FormLabel>
+            <br />
+            <span style={{ fontSize: "15px" }}>
+              <a
+                href={`#/appdesigner/forms/${get(
+                  findProgramEncounterCancellationForm(formMappings, encounterType),
+                  "formUUID"
+                )}`}
+              >
+                {get(findProgramEncounterCancellationForm(formMappings, encounterType), "formName")}
+              </a>
+            </span>
           </div>
           <p />
           <div>

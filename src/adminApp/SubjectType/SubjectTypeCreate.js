@@ -1,6 +1,6 @@
 import TextField from "@material-ui/core/TextField";
 import { Redirect } from "react-router-dom";
-import React, { useState, useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import http from "common/utils/httpClient";
 import Box from "@material-ui/core/Box";
 import { Title } from "react-admin";
@@ -8,26 +8,56 @@ import Button from "@material-ui/core/Button";
 import FormLabel from "@material-ui/core/FormLabel";
 import { subjectTypeInitialState } from "../Constant";
 import { subjectTypeReducer } from "../Reducers";
+import Switch from "@material-ui/core/Switch";
+import { Grid } from "@material-ui/core";
+import GroupRoles from "./GroupRoles";
+import { handleHouseholdChange, validateGroup } from "./GroupHandlers";
+import { useFormMappings } from "./effects";
+import _ from "lodash";
+import { findRegistrationForms } from "../domain/formMapping";
+import SelectForm from "./SelectForm";
+import { default as UUID } from "uuid";
 
 const SubjectTypeCreate = props => {
   const [subjectType, dispatch] = useReducer(subjectTypeReducer, subjectTypeInitialState);
   const [nameValidation, setNameValidation] = useState(false);
+  const [groupValidationError, setGroupValidationError] = useState(false);
   const [error, setError] = useState("");
   const [alert, setAlert] = useState(false);
   const [id, setId] = useState();
+  const [formMappings, setFormMappings] = useState([]);
+  const [formList, setFormList] = useState([]);
+
+  const consumeFormMappingResult = (formMap, forms) => {
+    setFormMappings(formMap);
+    setFormList(forms);
+  };
+
+  useFormMappings(consumeFormMappingResult);
 
   const onSubmit = event => {
     event.preventDefault();
 
+    validateGroup(subjectType.groupRoles, setGroupValidationError);
     if (subjectType.name.trim() === "") {
       setError("");
       setNameValidation(true);
-    } else {
-      setNameValidation(false);
+      return;
+    }
+    if (_.isEmpty(subjectType.registrationForm)) {
+      setError("Please select registration form");
+      return;
+    }
+
+    setNameValidation(false);
+    let subjectTypeUuid;
+
+    let subjectTypeSavePromise = () =>
       http
-        .post("/web/subjectType", { name: subjectType.name })
+        .post("/web/subjectType", subjectType)
         .then(response => {
           if (response.status === 200) {
+            subjectTypeUuid = response.data.uuid;
             setError("");
             setAlert(true);
             setId(response.data.id);
@@ -36,7 +66,18 @@ const SubjectTypeCreate = props => {
         .catch(error => {
           setError(error.response.data.message);
         });
-    }
+
+    const formMappingPromise = () =>
+      http.post("/emptyFormMapping", [
+        {
+          uuid: UUID.v4(),
+          subjectTypeUUID: subjectTypeUuid,
+          formUUID: subjectType.registrationForm.formUUID,
+          isVoided: false
+        }
+      ]);
+
+    return subjectTypeSavePromise().then(formMappingPromise);
   };
 
   return (
@@ -53,6 +94,47 @@ const SubjectTypeCreate = props => {
               value={subjectType.name}
               onChange={event => dispatch({ type: "name", payload: event.target.value })}
             />
+            <p />
+            <Grid component="label" container alignItems="center" spacing={2}>
+              <Grid>Household</Grid>
+              <Grid>
+                <Switch
+                  checked={subjectType.household}
+                  onChange={event => handleHouseholdChange(event, subjectType, dispatch)}
+                  name="household"
+                />
+              </Grid>
+            </Grid>
+            <p />
+            <Grid component="label" container alignItems="center" spacing={2}>
+              <Grid>Registration form name</Grid>
+              <Grid>
+                <SelectForm
+                  value={_.get(subjectType, "registrationForm.formName")}
+                  onChange={selectedForm =>
+                    dispatch({
+                      type: "registrationForm",
+                      payload: selectedForm
+                    })
+                  }
+                  formList={findRegistrationForms(formList)}
+                />
+              </Grid>
+            </Grid>
+            <p />
+            {!subjectType.household && subjectType.group && (
+              <>
+                <Grid component="label" container alignItems="center" spacing={2}>
+                  <Grid>Group Roles</Grid>
+                </Grid>
+                <GroupRoles
+                  groupRoles={subjectType.groupRoles}
+                  household={subjectType.household}
+                  dispatch={dispatch}
+                  error={groupValidationError}
+                />
+              </>
+            )}
             <div />
             {nameValidation && (
               <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>

@@ -16,14 +16,38 @@ import { programInitialState, colorPickerCSS } from "../Constant";
 import { programReducer } from "../Reducers";
 import ColorPicker from "material-ui-rc-color-picker";
 import "material-ui-rc-color-picker/assets/index.css";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import _ from "lodash";
+import { default as UUID } from "uuid";
+import {
+  findProgramEncounterCancellationForm,
+  findProgramEncounterForm,
+  findProgramEncounterForms,
+  findProgramEnrolmentForm,
+  findProgramEnrolmentForms,
+  findProgramExitForm,
+  findProgramExitForms
+} from "../domain/formMapping";
+import SelectForm from "../SubjectType/SelectForm";
 
 const ProgramEdit = props => {
   const [program, dispatch] = useReducer(programReducer, programInitialState);
   const [nameValidation, setNameValidation] = useState(false);
+  const [subjectValidation, setSubjectValidation] = useState(false);
+  const [programEnrolmentFormValidation, setProgramEnrolmentFormValidation] = useState(false);
+  const [programExitFormValidation, setProgramExitFormValidation] = useState(false);
   const [error, setError] = useState("");
   const [redirectShow, setRedirectShow] = useState(false);
   const [programData, setProgramData] = useState({});
   const [deleteAlert, setDeleteAlert] = useState(false);
+  const [subjectT, setSubjectT] = useState({});
+  const [formMappings, setFormMappings] = useState([]);
+  const [formList, setFormList] = useState([]);
+  const [subjectType, setSubjectType] = useState([]);
+  const [existMapping, setExistMapping] = useState([]);
 
   useEffect(() => {
     http
@@ -32,37 +56,87 @@ const ProgramEdit = props => {
       .then(result => {
         setProgramData(result);
         dispatch({ type: "setData", payload: result });
+        http
+          .get("/web/operationalModules")
+          .then(response => {
+            const formMap = response.data.formMappings;
+            formMap.map(l => (l["isVoided"] = false));
+            setFormMappings(formMap);
+            setFormList(response.data.forms);
+            setSubjectType(response.data.subjectTypes);
+            const temp = response.data.formMappings.filter(l => l.programUUID === result.uuid);
+            setExistMapping(temp);
+            setSubjectT(
+              response.data.subjectTypes.filter(l => l.uuid === temp[0].subjectTypeUUID)[0]
+            );
+
+            const enrolmentForm = findProgramEnrolmentForm(formMap, result);
+            dispatch({ type: "programEnrolmentForm", payload: enrolmentForm });
+
+            const exitForm = findProgramExitForm(formMap, result);
+            dispatch({ type: "programExitForm", payload: exitForm });
+          })
+          .catch(error => {});
       });
   }, []);
 
   const onSubmit = () => {
+    let hasError = false;
+
     if (program.name.trim() === "") {
       setError("");
       setNameValidation(true);
-    } else {
-      setNameValidation(false);
-      http
-        .put("/web/program/" + props.match.params.id, {
-          name: program.name,
-          colour: program.colour === "" ? "#ff0000" : program.colour,
-          programSubjectLabel: program.programSubjectLabel,
-          enrolmentSummaryRule: program.enrolmentSummaryRule,
-          enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
-          id: props.match.params.id,
-          organisationId: programData.organisationId,
-          programOrganisationId: programData.programOrganisationId,
-          voided: programData.voided
-        })
-        .then(response => {
-          if (response.status === 200) {
-            setError("");
-            setRedirectShow(true);
-          }
-        })
-        .catch(error => {
-          setError(error.response.data.message);
-        });
+      hasError = true;
     }
+
+    if (_.isEmpty(subjectT)) {
+      setError("");
+      setSubjectValidation(true);
+      hasError = true;
+    }
+
+    if (_.isEmpty(program.programEnrolmentForm)) {
+      setProgramEnrolmentFormValidation(true);
+      console.log("value is empty");
+      hasError = true;
+    }
+
+    if (_.isEmpty(program.programExitForm)) {
+      setProgramExitFormValidation(true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      return;
+    }
+
+    setNameValidation(false);
+    setSubjectValidation(false);
+    setProgramEnrolmentFormValidation(false);
+    setProgramExitFormValidation(false);
+
+    http
+      .put("/web/program/" + props.match.params.id, {
+        name: program.name,
+        colour: program.colour === "" ? "#ff0000" : program.colour,
+        programSubjectLabel: program.programSubjectLabel,
+        enrolmentSummaryRule: program.enrolmentSummaryRule,
+        enrolmentEligibilityCheckRule: program.enrolmentEligibilityCheckRule,
+        id: props.match.params.id,
+        organisationId: programData.organisationId,
+        programOrganisationId: programData.programOrganisationId,
+        subjectTypeUuid: subjectT.uuid,
+        programEnrolmentFormUuid: _.get(program, "programEnrolmentForm.formUUID"),
+        programExitFormUuid: _.get(program, "programExitForm.formUUID"),
+        voided: programData.voided
+      })
+      .then(response => {
+        setError("");
+        setRedirectShow(true);
+      })
+      .catch(error => {
+        setError("error.response.data.message");
+      });
   };
 
   const onDelete = () => {
@@ -105,6 +179,31 @@ const ProgramEdit = props => {
             </FormLabel>
           )}
           <p />
+          <p />
+          <FormControl>
+            <InputLabel id="subjectType">Select subject type</InputLabel>
+            <Select
+              label="Select subject type"
+              value={subjectT}
+              onChange={event => setSubjectT(event.target.value)}
+              style={{ width: "200px" }}
+            >
+              {subjectType.map(subject => {
+                return (
+                  <MenuItem value={subject} key={subject.name}>
+                    {subject.name}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          <div />
+          {subjectValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty subject type is not allowed.
+            </FormLabel>
+          )}
+          <p />
           <FormLabel>Colour picker</FormLabel>
           <br />
           <ColorPicker
@@ -124,6 +223,44 @@ const ProgramEdit = props => {
               dispatch({ type: "programSubjectLabel", payload: event.target.value })
             }
           />
+          <p />
+          <FormControl>
+            <SelectForm
+              label={"Select Enrolment form"}
+              value={_.get(program, "programEnrolmentForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programEnrolmentForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramEnrolmentForms(formList)}
+            />
+          </FormControl>
+          {programEnrolmentFormValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty enrolment form is not allowed.
+            </FormLabel>
+          )}
+          <p />
+          <FormControl>
+            <SelectForm
+              label={"Select Exit form"}
+              value={_.get(program, "programExitForm.formName")}
+              onChange={selectedForm =>
+                dispatch({
+                  type: "programExitForm",
+                  payload: selectedForm
+                })
+              }
+              formList={findProgramExitForms(formList)}
+            />
+          </FormControl>
+          {programExitFormValidation && (
+            <FormLabel error style={{ marginTop: "10px", fontSize: "12px" }}>
+              Empty exit form is not allowed.
+            </FormLabel>
+          )}
           <p />
           <FormLabel>Enrolment summary rule</FormLabel>
           <Editor

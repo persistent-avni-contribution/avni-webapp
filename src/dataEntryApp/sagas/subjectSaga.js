@@ -60,6 +60,7 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
   const enrolForm = yield call(api.fetchForm, formMapping.formUUID);
   yield put(setEnrolForm(mapForm(enrolForm)));
 
+  // if(!sessionStorage.getItem("programEnrolment")) {
   const program = yield select(selectProgram(programName));
 
   const state = yield select();
@@ -68,6 +69,8 @@ function* setupNewEnrolmentWorker({ subjectTypeName, programName }) {
 
   let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
   yield put.resolve(setProgramEnrolment(programEnrolment));
+
+  //}
 }
 
 function* dataEntrySearchWorker() {
@@ -92,9 +95,11 @@ export function* saveSubjectWatcher() {
 }
 
 export function* saveProgramEnrolmentWorker() {
-  debugger;
   const programEnrolment = yield select(selectEnrolmentSubject);
   let resource = programEnrolment.toResource;
+
+  //sessionStorage.removeItem("programEnrolment");
+
   yield call(api.saveProgram, resource);
   yield put(saveProgramComplete());
 }
@@ -116,6 +121,18 @@ export function* loadRegistrationPageWorker({ subjectTypeName }) {
 
   let subject = Individual.createEmptyInstance();
   subject.subjectType = subjectType;
+  yield put.resolve(setSubject(subject));
+  yield put.resolve(setLoaded());
+}
+
+function* loadEditRegistrationPageWatcher() {
+  yield takeLatest(subjectTypes.ON_LOAD_EDIT, loadEditRegistrationPageWorker);
+}
+
+export function* loadEditRegistrationPageWorker({ subject }) {
+  yield put.resolve(getOperationalModules());
+  yield put.resolve(getRegistrationForm(subject.subjectType.name));
+  yield put.resolve(getGenders());
   yield put.resolve(setSubject(subject));
   yield put.resolve(setLoaded());
 }
@@ -169,12 +186,13 @@ function* updateEnrolmentObsWatcher() {
 export function* updateEnrolmentObsWorker({ formElement, value }) {
   const state = yield select();
   const programEnrolment = state.dataEntry.enrolmentReducer.programEnrolment;
-  console.log("Program Enrolment Observations", programEnrolment.observations);
   programEnrolment.observations = updateObservations(
     programEnrolment.observations,
     formElement,
     value
   );
+
+  //sessionStorage.setItem("programEnrolment", JSON.stringify(programEnrolment));
   yield put(setProgramEnrolment(programEnrolment));
 }
 
@@ -188,7 +206,8 @@ export default function* subjectSaga() {
       loadRegistrationPageWatcher,
       saveProgramEnrolmentWatcher,
       updateObsWatcher,
-      updateEnrolmentObsWatcher
+      updateEnrolmentObsWatcher,
+      loadEditRegistrationPageWatcher
     ].map(fork)
   );
 }
