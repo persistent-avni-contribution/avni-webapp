@@ -480,7 +480,7 @@ const SubjectRegister = props => {
         await props.onLoad(props.match.queryParams.type);
       }
       props.saveCompleteFalse();
-      if (!disableSession) {
+      if (disableSession) {
         let subject = BrowserStore.fetchSubject();
         if (subject) props.setSubject(subject);
       }

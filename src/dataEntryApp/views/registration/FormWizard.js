@@ -163,7 +163,7 @@ const FormWizard = ({
           </Box>
           <Paper className={classes.form}>
             {currentPageNumber >= lastPageNumber + 1 ? (
-              <Summary observations={observations} />
+              <Summary observations={observations} form={form} />
             ) : (
               <Form
                 current={current}
