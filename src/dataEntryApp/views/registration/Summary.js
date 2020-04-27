@@ -51,28 +51,39 @@ const Summary = ({ observations, form, getRules, rulesData }) => {
       requestBody = body;
       console.log("requestbody####" + JSON.stringify(requestBody));
     }
-
     getRules(requestUrl, requestBody);
   }, []);
 
   console.log("#################" + JSON.stringify(rulesData));
+  const result =
+    rulesData.rules &&
+    rulesData.rules.data.registrationDecisions.filter(rule => rule.value.lenght > 0);
+  console.log(result, "###########");
 
   return rulesData.rules ? (
     <div className={classes.form}>
-      {rulesData.rules.data.registrationDecisions.filter(rule => rule.value.lenght >= 0)}
-
-      <Typography variant="button" display="block" gutterBottom>
-        {t("SYSTEM RECOMMENDATIONS")}
-      </Typography>
+      {rulesData.rules.data.registrationDecisions.map(rules =>
+        rules.value.length > 0 ? (
+          <Typography variant="button" display="block" gutterBottom>
+            {t("SYSTEM RECOMMENDATIONS")}
+          </Typography>
+        ) : (
+          ""
+        )
+      )}
       <Table className={classes.table} aria-label="simple table">
         <TableBody>
           {rulesData.rules &&
-            rulesData.rules.data.registrationDecisions.map(rules => (
-              <TableRow>
-                <TableCell align="justify">{rules.name}</TableCell>
-                <TableCell align="justify">{rules.value[0]}</TableCell>
-              </TableRow>
-            ))}
+            rulesData.rules.data.registrationDecisions.map(rules =>
+              rules.value.length > 0 ? (
+                <TableRow>
+                  <TableCell align="justify">{rules.name}</TableCell>
+                  <TableCell align="justify">{rules.value[0]}</TableCell>
+                </TableRow>
+              ) : (
+                ""
+              )
+            )}
         </TableBody>
       </Table>
 
