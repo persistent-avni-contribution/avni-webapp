@@ -116,16 +116,18 @@ const CompletedVisitsTable = ({
   match,
   loadProgramEncounters,
   loadEncounters,
-  load
+  load,
+  rowsPerPage,
+  setRowsPerPage,
+  page,
+  setPage
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
   const [order, setOrder] = React.useState("");
   const [orderBy, setOrderBy] = React.useState("name");
   const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
   let totalVisits = allVisits ? allVisits.totalElements : 0;
   let tableHeaderName = [];
   let allVisitsListObj = [];
@@ -228,14 +230,15 @@ const CompletedVisitsTable = ({
   };
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+    setRowsPerPage(parseInt(event.target.value, 10));
     let filterParams = {};
     filterParams.page = 0;
     filterParams.size = event.target.value;
     filterParams.sort = orderBy + "," + order;
     let SearchParamsFilter = new URLSearchParams(filterParams);
     let filterQueryString = SearchParamsFilter.toString();
+    // setRowsPerPage(parseInt(event.target.value, 10));
     isForProgramEncounters
       ? loadProgramEncounters(match.queryParams.uuid, filterQueryString)
       : loadEncounters(match.queryParams.uuid, filterQueryString);

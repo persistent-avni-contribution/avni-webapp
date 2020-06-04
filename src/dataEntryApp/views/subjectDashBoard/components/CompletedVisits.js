@@ -101,7 +101,7 @@ const CompleteVisit = ({
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   let totalVisits = completedVisits ? completedVisits.totalElements : "";
   let filterParams = {};
-  filterParams.page = 0;
+  filterParams.page = page;
   filterParams.size = rowsPerPage;
   const SearchParamsFilter = new URLSearchParams(filterParams);
   const filterQueryString = SearchParamsFilter.toString();
@@ -146,6 +146,10 @@ const CompleteVisit = ({
               loadProgramEncounters={loadProgramEncounters}
               loadEncounters={loadEncounters}
               load={load}
+              rowsPerPage={rowsPerPage}
+              setRowsPerPage={setRowsPerPage}
+              page={page}
+              setPage={setPage}
             />
           </Paper>
         </Paper>
