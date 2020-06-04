@@ -34,8 +34,8 @@ export class CustomSignIn extends SignIn {
 
     return (
       <Fragment>
-        <Grid>
-          <div>
+        <Grid style={{ padding: "4% 10% 4% 10%", backgroundColor: "#0f427b" }}>
+          <div style={{ padding: "0% 0% 9% 0%", backgroundColor: "white" }}>
             <div>
               {/* <img
                 src={require("../../src/logo.png")}
@@ -47,20 +47,24 @@ export class CustomSignIn extends SignIn {
                 alt="logo"
                 id="img1"
                 style={{
-                  marginLeft: "23%",
+                  marginLeft: "16%",
                   marginBottom: "5%",
                   marginTop: "9%",
                   height: "45px"
                 }}
               />
 
-              <img src={require("../../src/login_image.png")} id="img2" style={{ float: "left" }} />
+              <img
+                src={require("../../src/login_image.png")}
+                id="img2"
+                style={{ float: "left", height: "454px", width: "556px" }}
+              />
               <div style={{ marginBottom: "1.5%" }}>
                 <FormLabel
                   style={{
-                    marginLeft: "23%",
-                    fontSize: "23px",
-                    color: "black",
+                    marginLeft: "16%",
+                    fontSize: "24px",
+                    color: "#010101",
                     fontWeight: "530"
                   }}
                 >
@@ -125,7 +129,7 @@ export class CustomSignIn extends SignIn {
                       <p
                         className="text-grey-dark"
                         style={{
-                          marginLeft: "35%",
+                          marginLeft: "42%",
                           cursor: "pointer",
                           color: "#0000EE",
                           fontSize: "12px"
@@ -147,7 +151,12 @@ export class CustomSignIn extends SignIn {
                 <li>
                   <div className="flex items-center justify-between">
                     <Fab
-                      style={{ backgroundColor: "#f27510", height: "38px", boxShadow: "none" }}
+                      style={{
+                        backgroundColor: "#f27510",
+                        height: "40px",
+                        boxShadow: "none",
+                        fontSize: "14px"
+                      }}
                       variant="extended"
                       color="primary"
                       onClick={() => super.signIn()}
