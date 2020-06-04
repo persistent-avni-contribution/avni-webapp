@@ -234,19 +234,22 @@ const FilterResult = ({
         <LineBreak num={1} />
         <FormLabel component="legend">{t("visitType")}</FormLabel>
         <FormGroup row>
-          {encounterTypes.map(visitType => (
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={selectedVisitTypes != null ? selectedVisitTypes[visitType.uuid] : false}
-                  onChange={visitTypesChange}
-                  name={visitType.uuid}
-                  color="primary"
-                />
-              }
-              label={visitType.name}
-            />
-          ))}
+          {encounterTypes &&
+            encounterTypes.map(visitType => (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={
+                      selectedVisitTypes != null ? selectedVisitTypes[visitType.uuid] : false
+                    }
+                    onChange={visitTypesChange}
+                    name={visitType.uuid}
+                    color="primary"
+                  />
+                }
+                label={visitType.name}
+              />
+            ))}
         </FormGroup>
       </form>
     </DialogContent>

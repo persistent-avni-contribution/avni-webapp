@@ -32,7 +32,6 @@ import {
 } from "../../../../dataEntryApp/components/TableHeaderSorting";
 import { TablePaginationActions } from "../../../../dataEntryApp/components/TablePagination";
 import { store } from "../../../../common/store/createStore";
-import CustomizedBackdrop from "../../../components/CustomizedBackdrop";
 
 const useStyle = makeStyles(theme => ({
   root: {
@@ -56,7 +55,7 @@ const Row = props => {
   const classes = useStyle();
 
   return (
-    <React.Fragment>
+    <Fragment>
       <TableRow className={classes.root}>
         <TableCell component="th" scope="row" padding="none" width="30%">
           <Link
@@ -105,7 +104,7 @@ const Row = props => {
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </Fragment>
   );
 };
 
@@ -115,8 +114,7 @@ const CompletedVisitsTable = ({
   isForProgramEncounters,
   match,
   loadProgramEncounters,
-  loadEncounters,
-  load
+  loadEncounters
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
@@ -243,7 +241,6 @@ const CompletedVisitsTable = ({
 
   return (
     <div>
-      <CustomizedBackdrop load={load} />
       <Table
         className={classes.table}
         aria-labelledby="tableTitle"

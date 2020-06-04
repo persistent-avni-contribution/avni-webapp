@@ -113,46 +113,42 @@ const CompleteVisit = ({
       : loadEncounters(match.queryParams.uuid, filterQueryString);
   }, []);
 
-  return completedVisits && load ? (
-    <div>
-      <Fragment>
-        <Breadcrumbs path={match.path} />
-        <Paper className={classes.searchBox}>
-          <Grid container spacing={3}>
-            <Grid item xs={6} alignItems="left">
-              <div align="left">
-                <Typography variant="h6" gutterBottom className={classes.completedVsits}>
-                  {t("completedVisits")}
-                </Typography>
-                <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
-                  {totalVisits} {t("resultfound")}
-                </Typography>
-              </div>
-            </Grid>
-            <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
-              <FilterResult
-                isForProgramEncounters={isForProgramEncounters}
-                entityUuid={match.queryParams.uuid}
-                encounterTypes={encounterTypes}
-              />
-            </Grid>
+  return (
+    <Fragment>
+      <Breadcrumbs path={match.path} />
+      <Paper className={classes.searchBox}>
+        <CustomizedBackdrop load={load} />
+        <Grid container spacing={3}>
+          <Grid item xs={6} alignItems="left">
+            <div align="left">
+              <Typography variant="h6" gutterBottom className={classes.completedVsits}>
+                {t("completedVisits")}
+              </Typography>
+              <Typography variant="subtitle1" gutterBottom className={classes.resultFound}>
+                {totalVisits} {t("resultfound")}
+              </Typography>
+            </div>
           </Grid>
-          <Paper className={classes.tableBox}>
-            <CompletedVisitsTable
+          <Grid item xs={6} container direction="row" justify="flex-end" alignItems="flex-start">
+            <FilterResult
               isForProgramEncounters={isForProgramEncounters}
-              allVisits={completedVisits}
-              enableReadOnly={enableReadOnly}
-              match={match}
-              loadProgramEncounters={loadProgramEncounters}
-              loadEncounters={loadEncounters}
-              load={load}
+              entityUuid={match.queryParams.uuid}
+              encounterTypes={encounterTypes}
             />
-          </Paper>
+          </Grid>
+        </Grid>
+        <Paper className={classes.tableBox}>
+          <CompletedVisitsTable
+            isForProgramEncounters={isForProgramEncounters}
+            allVisits={completedVisits}
+            enableReadOnly={enableReadOnly}
+            match={match}
+            loadProgramEncounters={loadProgramEncounters}
+            loadEncounters={loadEncounters}
+          />
         </Paper>
-      </Fragment>
-    </div>
-  ) : (
-    <CustomizedBackdrop load={load} />
+      </Paper>
+    </Fragment>
   );
 };
 
