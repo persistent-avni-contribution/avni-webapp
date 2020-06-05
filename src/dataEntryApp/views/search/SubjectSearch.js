@@ -58,6 +58,8 @@ const SubjectSearch = props => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchvalue, setSearchvalue] = React.useState("");
+  const [order, setOrder] = React.useState("desc");
+  const [orderBy, setOrderBy] = React.useState("firstName");
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -126,6 +128,10 @@ const SubjectSearch = props => {
         setRowsPerPage={setRowsPerPage}
         page={page}
         setPage={setPage}
+        order={order}
+        setOrder={setOrder}
+        orderBy={orderBy}
+        setOrderBy={setOrderBy}
       />
     </Paper>
   );

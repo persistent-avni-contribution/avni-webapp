@@ -65,12 +65,14 @@ export const SubjectsTable = ({
   rowsPerPage,
   setRowsPerPage,
   page,
-  setPage
+  setPage,
+  order,
+  setOrder,
+  orderBy,
+  setOrderBy
 }) => {
   const classes = useStyle();
   const { t } = useTranslation();
-  const [order, setOrder] = React.useState("asc");
-  const [orderBy, setOrderBy] = React.useState("firstName");
   const [selected, setSelected] = React.useState([]);
   let tableHeaderNames = [];
   let pageinfo = pageDetails.subjects;
@@ -81,8 +83,8 @@ export const SubjectsTable = ({
     });
   };
   let subjectsListObj = [];
-  // let sortfields = orderBy + "," + order;
-  let sortfields;
+  let sortfields = orderBy + "," + order;
+  // let sortfields;
 
   if (subjects) {
     subjectsListObj = subjects.map(a => {
@@ -160,7 +162,6 @@ export const SubjectsTable = ({
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
     setPage(0);
-    sortfields = property + "," + order;
     pageDetails.search({ page: 0, query: searchText, size: rowsPerPage, sort: sortfields });
   };
 
