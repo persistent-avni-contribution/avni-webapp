@@ -82,7 +82,7 @@ export class CustomSignIn extends SignIn {
                     onChange={this.handleInputChange}
                     type="text"
                     label="Username"
-                    style={{ width: "56%", marginBottom: "2%" }}
+                    style={{ width: "71%", marginBottom: "2%" }}
                   />
                 </li>
                 <li>
@@ -117,7 +117,7 @@ export class CustomSignIn extends SignIn {
                           </IconButton>
                         </InputAdornment>
                       }
-                      style={{ width: "249px" }}
+                      style={{ width: "84%", marginBottom: "2%" }}
                     />
                   </FormControl>
 
