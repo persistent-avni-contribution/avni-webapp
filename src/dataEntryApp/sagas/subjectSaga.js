@@ -60,7 +60,8 @@ function* setupNewEnrolmentWorker({
   subjectTypeName,
   programName,
   formType,
-  programEnrolmentUuid
+  programEnrolmentUuid,
+  subjectUuid
 }) {
   const formMapping = yield select(
     selectEnrolmentFormMappingForSubjectType(subjectTypeName, programName, formType)
@@ -69,22 +70,31 @@ function* setupNewEnrolmentWorker({
   yield put(setEnrolForm(mapForm(enrolForm)));
   const program = yield select(selectProgram(programName));
   const state = yield select();
-  const subject = state.dataEntry.subjectProfile.subjectProfile;
-  subject.subjectType = SubjectType.create("Individual");
+  // const subject = state.dataEntry.subjectProfile.subjectProfile;
+  // subject.subjectType = SubjectType.create("Individual");
 
-  if (formType == "ProgramEnrolment" && programEnrolmentUuid) {
+  if (formType === "ProgramEnrolment" && !programEnrolmentUuid) {
+    let programEnrolment = ProgramEnrolment.createEmptyInstance({ program });
+    programEnrolment.individual = state.dataEntry.subjectProfile.subjectProfile;
+    yield put.resolve(setProgramEnrolment(programEnrolment));
+  } else if (formType === "ProgramEnrolment" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+    //api for subject profile
     programEnrolment = mapProgramEnrolment(programEnrolment);
-    programEnrolment.individual = subject;
+    let subjectProfile = yield call(api.fetchSubjectProfile, programEnrolment.subjectUuid);
+
+    // programEnrolment = mapProgramEnrolment(programEnrolment);
+    programEnrolment.individual = mapProfile(subjectProfile);
+    // programEnrolment.individual = subject;
     programEnrolment.programExitObservations = [];
     yield put.resolve(setProgramEnrolment(programEnrolment));
-  } else if (formType == "ProgramEnrolment") {
-    let programEnrolment = ProgramEnrolment.createEmptyInstance({ individual: subject, program });
-    yield put.resolve(setProgramEnrolment(programEnrolment));
-  } else if (formType == "ProgramExit" && programEnrolmentUuid) {
+  } else if (formType === "ProgramExit" && programEnrolmentUuid) {
     let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
     programEnrolment = mapProgramEnrolment(programEnrolment);
-    programEnrolment.individual = subject;
+    let subjectProfile = yield call(api.fetchSubjectProfile, programEnrolment.subjectUuid);
+
+    programEnrolment.individual = mapProfile(subjectProfile);
+    // programEnrolment.individual = subject;
 
     if (!programEnrolment.programExitObservations) {
       programEnrolment.programExitObservations = [];
@@ -92,14 +102,18 @@ function* setupNewEnrolmentWorker({
     }
 
     yield put.resolve(setProgramEnrolment(programEnrolment));
-  } else {
-    let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
-    programEnrolment = mapProgramEnrolment(programEnrolment);
-    programEnrolment.programExitObservations = [];
-    programEnrolment.programExitDateTime = new Date();
-    programEnrolment.individual = subject;
-    yield put.resolve(setProgramEnrolment(programEnrolment));
   }
+  // else {
+  //   let programEnrolment = yield call(api.fetchProgramEnrolments, programEnrolmentUuid);
+  //   programEnrolment = mapProgramEnrolment(programEnrolment);
+  //   programEnrolment.programExitObservations = [];
+  //   programEnrolment.programExitDateTime = new Date();
+  //   programEnrolment.individual = state.dataEntry.subjectProfile.subjectProfile;
+
+  //   // programEnrolment.individual = subject;
+
+  //   yield put.resolve(setProgramEnrolment(programEnrolment));
+  // }
 }
 
 export function* dataEntrySearchWatcher() {
@@ -148,10 +162,10 @@ export function* undoExitProgramEnrolmentWorker({ programEnrolmentUuid }) {
   programEnrolment.programExitObservations = [];
 
   const state = yield select();
-  const subject = state.dataEntry.subjectProfile.subjectProfile;
-  subject.subjectType = SubjectType.create("Individual");
+  // const subject = state.dataEntry.subjectProfile.subjectProfile;
+  // subject.subjectType = SubjectType.create("Individual");
 
-  programEnrolment.individual = subject;
+  programEnrolment.individual = state.dataEntry.subjectProfile.subjectProfile;
 
   let resource = programEnrolment.toResource;
   yield call(api.saveProgram, resource);

@@ -85,6 +85,7 @@ export const DateFormElement = ({ formElement: fe, value, update, validationResu
       value={value}
       update={update}
       validationResult={validationResult}
+      key={value}
     />
   ) : (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -188,7 +189,12 @@ export const DateAndDurationFormElement = ({
             onChange={durationValue => onDurationChange(durationValue)}
           />
           {durationValue.map(item => (
-            <FormControlLabel value={item} control={<Radio color="primary" />} label={item} />
+            <FormControlLabel
+              key={item}
+              value={item}
+              control={<Radio color="primary" />}
+              label={item}
+            />
           ))}
         </RadioGroup>
       </form>

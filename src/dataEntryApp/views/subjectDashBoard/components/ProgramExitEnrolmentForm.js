@@ -8,9 +8,6 @@ import {
 import { withRouter } from "react-router-dom";
 import { setValidationResults } from "dataEntryApp/reducers/registrationReducer";
 
-let subject = Individual.createEmptyInstance();
-subject.subjectType = SubjectType.create("Individual");
-
 const mapFormStateToProps = state => ({
   form: state.dataEntry.enrolmentReducer.enrolForm,
   subject: state.dataEntry.subjectProfile.subjectProfile,

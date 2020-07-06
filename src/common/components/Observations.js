@@ -58,19 +58,18 @@ const Observations = ({ observations, additionalRows }) => {
     );
   });
 
-  additionalRows &&
-    additionalRows.forEach((row, index) => {
-      rows.unshift(
-        <TableRow key={observations.length + index}>
-          <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
-            {row.label}
-          </TableCell>
-          <TableCell align="left" width="50%">
-            <div>{row.value}</div>
-          </TableCell>
-        </TableRow>
-      );
-    });
+  additionalRows.forEach((row, index) => {
+    rows.unshift(
+      <TableRow key={observations.length + index}>
+        <TableCell style={{ color: "#555555" }} component="th" scope="row" width="50%">
+          {row.label}
+        </TableCell>
+        <TableCell align="left" width="50%">
+          <div>{row.value}</div>
+        </TableCell>
+      </TableRow>
+    );
+  });
 
   return (
     <div>
@@ -83,12 +82,17 @@ const Observations = ({ observations, additionalRows }) => {
   );
 };
 
-Observations.propTypes = {
-  observations: PropTypes.arrayOf(Observation).isRequired,
-  additionalRows: PropTypes.arrayOf({
-    label: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired
-  })
+// Observations.propTypes = {
+//   observations: PropTypes.arrayOf(Observation).isRequired,
+//   additionalRows: PropTypes.arrayOf({
+//     label: PropTypes.string.isRequired,
+//     value: PropTypes.string.isRequired
+//   }).isRequired
+// };
+
+Observations.defaultProps = {
+  observations: [],
+  additionalRows: []
 };
 
 export default Observations;

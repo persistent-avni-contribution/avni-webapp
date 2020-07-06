@@ -5,8 +5,9 @@ import { updateObs, saveProgramEnrolment } from "dataEntryApp/reducers/programEn
 import { withRouter } from "react-router-dom";
 import { setValidationResults } from "dataEntryApp/reducers/registrationReducer";
 
-let subject = Individual.createEmptyInstance();
-subject.subjectType = SubjectType.create("Individual");
+// const ProgramEnrolmentForm = ({formType,subjectUuid, match}) =>{
+//     console.log(formType,subjectUuid)
+// }
 
 const mapFormStateToProps = state => ({
   form: state.dataEntry.enrolmentReducer.enrolForm,
@@ -27,11 +28,10 @@ const mapFormDispatchToProps = {
   setValidationResults
 };
 
-const ProgramEnrolmentForm = withRouter(
+export default withRouter(
   connect(
     mapFormStateToProps,
     mapFormDispatchToProps
   )(FormWizard)
 );
-
-export default ProgramEnrolmentForm;
+// export default ProgramEnrolmentForm;

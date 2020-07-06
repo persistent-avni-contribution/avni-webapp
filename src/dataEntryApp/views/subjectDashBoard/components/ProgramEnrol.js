@@ -77,15 +77,16 @@ const ProgramEnrol = ({
   const formType = match.queryParams.formType;
 
   useEffect(() => {
-    (async function fetchData() {
-      await setInitialState();
-      await onLoad(
+    (function fetchData() {
+      setInitialState();
+      onLoad(
         "Individual",
         match.queryParams.programName,
         formType,
-        match.queryParams.programEnrolmentUuid
+        match.queryParams.programEnrolmentUuid,
+        match.queryParams.uuid
       );
-      await getSubjectProfile(match.queryParams.uuid);
+      // await getSubjectProfile(match.queryParams.uuid);
     })();
   }, []);
 
@@ -107,7 +108,7 @@ const ProgramEnrol = ({
               programEnrolment &&
               programEnrolment.enrolmentDateTime &&
               formType === "ProgramEnrolment" ? (
-                <ProgramEnrolmentForm formType={formType}>
+                <ProgramEnrolmentForm formType={formType} subjectUuid={match.queryParams.uuid}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       style={{ width: "30%" }}

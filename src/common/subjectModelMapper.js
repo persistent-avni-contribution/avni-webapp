@@ -104,6 +104,7 @@ export const mapProgramEnrolment = json => {
     programEnrolment.programExitDateTime = new Date(json.programExitDateTime);
   programEnrolment.programExitObservations = mapObservation(json.exitObservations);
   programEnrolment.observations = mapObservation(json.observations);
+  programEnrolment.subjectUuid = json.subjectUuid;
   const program = new Program();
   program.uuid = json.programUuid;
   programEnrolment.program = program;
